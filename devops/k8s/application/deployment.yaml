@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: consumer
+  labels:
+    type: consumer
+  namespace: app
+spec:
+  template:
+    metadata:
+      labels:
+        type: consumer
+    spec:
+      containers:
+        - name: consumer
+          image: localhost:5000/mariusdw.com/demo-kafka-consumer:latest
+  selector:
+    matchLabels:
+      type: consumer
+  replicas: 1
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: producer
+  labels:
+    type: producer
+  namespace: app
+spec:
+  template:
+    metadata:
+      labels:
+        type: producer
+    spec:
+      containers:
+        - name: producer
+          image: localhost:5000/mariusdw.com/demo-kafka-producer:latest
+  selector:
+    matchLabels:
+      type: producer
+  replicas: 1
