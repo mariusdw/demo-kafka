@@ -13,18 +13,39 @@ import java.time.LocalDateTime;
 @Slf4j
 public class Producer {
     final private KafkaTemplate<String, String> kafkaTemplate;
+    @Value("${kafka.enabled}")
+    private boolean kafkaEnabled;
 
     @Value("${kafka.producer.topicName}")
     private String producerTopic;
+
+    @Value("${kafka.producer.maxRandomDelayMs}")
+    private int maxRandomDelayMs;
 
     @Autowired
     public Producer(KafkaTemplate<String, String> kafkaTemplate) {
         this.kafkaTemplate = kafkaTemplate;
     }
 
-    @Scheduled(initialDelayString = "${kafka.producer.initialDelayMs}", fixedRateString = "${kafka.producer.fixedRateMs}")
+    @Scheduled(initialDelayString = "${kafka.producer.initialDelayMs}", fixedDelayString = "${kafka.producer.intervalMs}")
     public void produce() {
-        kafkaTemplate.send(producerTopic, "Hello World: " + LocalDateTime.now());
-        log.info("Message sent {}", LocalDateTime.now());
+        sleep(calculateRandomSleepDelayMs(maxRandomDelayMs));
+        if (kafkaEnabled) {
+            kafkaTemplate.send(producerTopic, LocalDateTime.now() + ": Hello World");
+            log.info("Message sent");
+        }
+        log.info("Message not sent, kafka not enabled");
+    }
+
+    static protected int calculateRandomSleepDelayMs(int maxRandomDelayMs) {
+        return (int) (Math.random() * maxRandomDelayMs);
+    }
+
+    static protected void sleep(int duration) {
+        try {
+            Thread.sleep(duration);
+        } catch (InterruptedException e) {
+            log.info("Sleep interrupted");
+        }
     }
 }
