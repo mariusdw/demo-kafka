@@ -15,16 +15,28 @@ services:
     environment:
       - KAFKA_CLUSTERS_0_NAME=local
       - KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS=kafka:9092
-      - SERVER_PORT=8081
+      - SERVER_PORT=8080
+    ports:
+      - 19091:8080
+
+  prometheus:
+    #docker run --name prometheus -d -p 9090:9090 prom/prometheus
+    image: 'prom/prometheus'
+    ports:
+      - 19090:9090
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+
+  demo-kafka-consumer:
+    image: 'localhost:5000/mariusdw.com/demo-kafka-consumer:latest'
     ports:
       - 18081:8081
-
-  consumer:
-    image: 'localhost:5000/mariusdw.com/demo-kafka-consumer:latest'
     hostname: consumer
     entrypoint: java -jar -Dspring.profiles.active=dev /opt/app.jar
 
-  producer:
+  demo-kafka-producer:
     image: 'localhost:5000/mariusdw.com/demo-kafka-producer:latest'
+    ports:
+      - 18080:8080
     hostname: producer
     entrypoint: java -jar -Dspring.profiles.active=dev /opt/app.jar

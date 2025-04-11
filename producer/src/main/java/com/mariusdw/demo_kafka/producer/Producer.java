@@ -33,8 +33,9 @@ public class Producer {
         if (kafkaEnabled) {
             kafkaTemplate.send(producerTopic, LocalDateTime.now() + ": Hello World");
             log.info("Message sent");
+        } else {
+            log.info("Message not sent, kafka not enabled");
         }
-        log.info("Message not sent, kafka not enabled");
     }
 
     static protected int calculateRandomSleepDelayMs(int maxRandomDelayMs) {

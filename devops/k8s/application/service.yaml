@@ -6,8 +6,22 @@ metadata:
 spec:
   type: NodePort
   ports:
-  - targetPort: 8080
+  - targetPort: 8081
     port: 80
     nodePort: 30001
   selector:
     type: consumer
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: producer
+  namespace: app
+spec:
+  type: NodePort
+  ports:
+    - targetPort: 8080
+      port: 80
+      nodePort: 30002
+  selector:
+    type: producer
